@@ -56,59 +56,59 @@ where transactions_id is null
    or total_sale is null;
 
  **1 write sql query to retrive all columns for sales made on '2022-11-05**
-```select * from retail_sales_analysis
-where sale_date = '2022-11-05'
-```
+``` select * from retail_sales_analysis
+     where sale_date = '2022-11-05' ```
+
 
 **2 write sql query to retrive all transcation where catrgory is 'clothing' and quantity sold is more than 3	in month of nov-2022**
 ```select * from retail_sales_analysis
-where category = 'Clothing'
+    where category = 'Clothing'
 	and quantity>=3
-	and format(sale_date ,'yyyy-MM') = '2022-11'
-```
+	and format(sale_date ,'yyyy-MM') = '2022-11' ```
+
 
 **3 write sql query to  calculate total_sales for each category**
 ```select 
 	category, 
 	sum(total_sale) as total_sales 
-from retail_sales_analysis
+    from retail_sales_analysis
 	group by category;```
 
 **4 find top 5 customers with the highest total sales across all transaction and calculate their contribution percentage to the company's overall sales**
-```with customer_sales as ( 
+``` with customer_sales as ( 
 		select  customer_id,sum(total_sale) as cust_total_sales 
 		from retail_sales_analysis
 		group by customer_id),
-company_total as(
+   company_total as(
 		select sum(total_sale) as total_sales
 		from retail_sales_analysis)
-select top 5 cs.customer_id ,
+   select top 5 cs.customer_id ,
 		cs.cust_total_sales,
 		(cs.cust_total_sales/ct.total_sales)*100  as pct_contribution
 		from customer_sales cs
 		cross join company_total ct 
-		order by cs.customer_id desc```
+		order by cs.customer_id desc ```
 	
 		
 **5 identify the  product category that generates the highest profit margin (total_sales - cogs* quantity )/total_sales and rank categories accordingly.**
 
-```with profit_table as (
+``` with profit_table as (
         select category,
 			   total_sale,
 		       (price_per_unit - cogs) * quantity as profit		
-from retail_sales_analysis),
+  from retail_sales_analysis),
 
-profit_margin as 
+   profit_margin as 
 	( select category, 
 			 sum(profit)/sum(total_sale) *100 as sale_profit_margin, 
 			 rank() over( order by  sum(profit)/sum(total_sale)*100 desc) as rnk
 	  from profit_table group by category)
 
-select category,sale_profit_margin from
-profit_margin;``` 
+   select category,sale_profit_margin from
+   profit_margin;``` 
 
 **6  Determine month-on-month sales growth percentage for each product category in 2022.**
-```with monthly_sales as(
+``` with monthly_sales as(
 	select  month(sale_date) as sale_month,
 			category,
 			sum(total_sale) as total_monthly_sales
@@ -153,7 +153,7 @@ select c.customer_id,
 	   case when p.rnk >= 0.75 then 'high value customers' else 'low value customers' end as customer_segment
 from customer_details c left join percent_rnk p on 
 p.customer_id = c.customer_id
-where p.rnk >= 0.75```
+where p.rnk >= 0.75 ```
 
 
 **8  divide customers into age brackets (18-25, 26-35 , 36-50 , 51+) and find out which group generates the highest sales for each category.**
