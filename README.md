@@ -42,7 +42,7 @@ quantity, price_per_unit, cogs, total_sale – Sales and cost details
 
 Before performing analysis, rows with missing critical values (transactions_id, sale_date, customer_id, category, sales metrics) were removed:
 
-delete from retail_sales_analysis
+```delete from retail_sales_analysis
 where transactions_id is null
    or sale_date is null
    or sale_time is null
@@ -56,24 +56,26 @@ where transactions_id is null
    or total_sale is null;
 
  **1 write sql query to retrive all columns for sales made on '2022-11-05**
-select * from retail_sales_analysis
+```select * from retail_sales_analysis
 where sale_date = '2022-11-05'
+```
 
 **2 write sql query to retrive all transcation where catrgory is 'clothing' and quantity sold is more than 3	in month of nov-2022**
-select * from retail_sales_analysis
+```select * from retail_sales_analysis
 where category = 'Clothing'
 	and quantity>=3
 	and format(sale_date ,'yyyy-MM') = '2022-11'
+```
 
 **3 write sql query to  calculate total_sales for each category**
-select 
+```select 
 	category, 
 	sum(total_sale) as total_sales 
 from retail_sales_analysis
-	group by category;
+	group by category;```
 
 **4 find top 5 customers with the highest total sales across all transaction and calculate their contribution percentage to the company's overall sales**
-with customer_sales as ( 
+```with customer_sales as ( 
 		select  customer_id,sum(total_sale) as cust_total_sales 
 		from retail_sales_analysis
 		group by customer_id),
@@ -85,12 +87,12 @@ select top 5 cs.customer_id ,
 		(cs.cust_total_sales/ct.total_sales)*100  as pct_contribution
 		from customer_sales cs
 		cross join company_total ct 
-		order by cs.customer_id desc
+		order by cs.customer_id desc```
 	
 		
-  **5 identify the  product category that generates the highest profit margin (total_sales - cogs* quantity )/total_sales and rank categories accordingly.**
+**5 identify the  product category that generates the highest profit margin (total_sales - cogs* quantity )/total_sales and rank categories accordingly.**
 
-with profit_table as (
+```with profit_table as (
         select category,
 			   total_sale,
 		       (price_per_unit - cogs) * quantity as profit		
@@ -103,10 +105,10 @@ profit_margin as
 	  from profit_table group by category)
 
 select category,sale_profit_margin from
-profit_margin; 
+profit_margin;``` 
 
 **6  Determine month-on-month sales growth percentage for each product category in 2022.**
-with monthly_sales as(
+```with monthly_sales as(
 	select  month(sale_date) as sale_month,
 			category,
 			sum(total_sale) as total_monthly_sales
@@ -128,11 +130,11 @@ select
 	total_monthly_sales,
 	((total_monthly_sales - prev_month_sale)/prev_month_sale)* 100
 	as pct_growth from growth
-where prev_month_sale is not null
+where prev_month_sale is not null```
 
 
 **7 for each customer, calculate their total number of transactions, total_sales, average order value and then identify  high value customers (spending above the 75th percentile)**
-with customer_details as (
+```with customer_details as (
 		select customer_id,
 			   count(transactions_id) as total_transaction,
 			   sum(total_sale) as total_sales,
@@ -151,11 +153,11 @@ select c.customer_id,
 	   case when p.rnk >= 0.75 then 'high value customers' else 'low value customers' end as customer_segment
 from customer_details c left join percent_rnk p on 
 p.customer_id = c.customer_id
-where p.rnk >= 0.75
+where p.rnk >= 0.75```
 
 
 **8  divide customers into age brackets (18-25, 26-35 , 36-50 , 51+) and find out which group generates the highest sales for each category.**
-with age_category as (
+```with age_category as (
 	select 
 	    category ,
 		total_sale,
@@ -170,11 +172,11 @@ select category ,
        sum(total_sale) as total_sales
 	   from age_category
 group by category, age_group
-order by total_sales
+order by total_sales```
 
 
 **9 identify customers who made only one transaction in 2022 and calculate their share in total sales compared to repeat customers.**
-with cust_txn as(
+```with cust_txn as(
 	 select customer_id , 
 	        count(*) as transaction_count ,
 			sum(total_sale) as total_sales
@@ -200,12 +202,12 @@ select  o.customer_id,
 		o.one_time_sale * 100 / (o.one_time_sale + r.repeat_sales) as one_time_pct,
 		r.repeat_sales * 100 / (o.one_time_sale + r.repeat_sales) as repeat_pct
 	from one_time o 
-	cross join repeat_cust r
+	cross join repeat_cust r ```
 	
 	
 **10 find the best selling product category per gender and compare sales contribution between male and female customers.**
 select * from retail_sales_analysis;
-with gender_sales as (
+```with gender_sales as (
 	select gender, category ,sum(total_sale) total_sales from retail_sales_analysis
 	group by gender , category),
 
@@ -219,7 +221,7 @@ select gender ,
        category,
 	   total_sales
 	 from ranked where rnk = 1
-
+```
 
 
 
