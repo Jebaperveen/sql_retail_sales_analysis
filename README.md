@@ -56,11 +56,13 @@ where transactions_id is null
    or total_sale is null;
 
  **1 write sql query to retrive all columns for sales made on '2022-11-05**
+
 ``` select * from retail_sales_analysis
      where sale_date = '2022-11-05' ```
 
 
 **2 write sql query to retrive all transcation where catrgory is 'clothing' and quantity sold is more than 3	in month of nov-2022**
+
 ```select * from retail_sales_analysis
     where category = 'Clothing'
 	and quantity>=3
@@ -68,6 +70,7 @@ where transactions_id is null
 
 
 **3 write sql query to  calculate total_sales for each category**
+
 ```select 
 	category, 
 	sum(total_sale) as total_sales 
@@ -75,6 +78,7 @@ where transactions_id is null
 	group by category;```
 
 **4 find top 5 customers with the highest total sales across all transaction and calculate their contribution percentage to the company's overall sales**
+
 ``` with customer_sales as ( 
 		select  customer_id,sum(total_sale) as cust_total_sales 
 		from retail_sales_analysis
@@ -108,6 +112,7 @@ where transactions_id is null
    profit_margin;``` 
 
 **6  Determine month-on-month sales growth percentage for each product category in 2022.**
+
 ``` with monthly_sales as(
 	select  month(sale_date) as sale_month,
 			category,
@@ -134,6 +139,7 @@ where prev_month_sale is not null```
 
 
 **7 for each customer, calculate their total number of transactions, total_sales, average order value and then identify  high value customers (spending above the 75th percentile)**
+
 ```with customer_details as (
 		select customer_id,
 			   count(transactions_id) as total_transaction,
@@ -157,6 +163,7 @@ where p.rnk >= 0.75 ```
 
 
 **8  divide customers into age brackets (18-25, 26-35 , 36-50 , 51+) and find out which group generates the highest sales for each category.**
+
 ```with age_category as (
 	select 
 	    category ,
@@ -176,6 +183,7 @@ order by total_sales```
 
 
 **9 identify customers who made only one transaction in 2022 and calculate their share in total sales compared to repeat customers.**
+
 ```with cust_txn as(
 	 select customer_id , 
 	        count(*) as transaction_count ,
@@ -207,6 +215,7 @@ select  o.customer_id,
 	
 **10 find the best selling product category per gender and compare sales contribution between male and female customers.**
 select * from retail_sales_analysis;
+
 ```with gender_sales as (
 	select gender, category ,sum(total_sale) total_sales from retail_sales_analysis
 	group by gender , category),
